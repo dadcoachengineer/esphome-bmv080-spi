@@ -78,10 +78,14 @@ binary_sensor:
 
 ## Status / upstream
 
-Built 2026-06; verified against ESPHome 2026.6.1's SPI API; **pending on-hardware
-validation** on the Polverine. Intended for upstreaming once proven — ideally by adding
-SPI support back to sweitzja's component (so I²C + SPI live in one component) and/or as a
-core PR (precedent: `bme68x_bsec2` is in ESPHome core depending on a closed Bosch lib).
+**✅ Hardware-validated on a BlackIoT Polverine (ESP32-S3) — 2026-06-20, ESPHome 2026.6.1.**
+First flash: compiled clean, `bmv080_open` succeeded over SPI, sensor ID read
+(`D0ML6909261C`), continuous PM1/PM2.5/PM10 + particle counts + obstructed/out-of-range
+publishing to Home Assistant. SDK driver 24.1.0; SPI2 @ 1 MHz, CS GPIO10.
+
+Intended for upstreaming — ideally by adding SPI support back to sweitzja's component
+(so I²C + SPI live in one component) and/or as a core PR (precedent: `bme68x_bsec2` is
+in ESPHome core depending on a closed Bosch lib).
 
 ## Credits / license
 
