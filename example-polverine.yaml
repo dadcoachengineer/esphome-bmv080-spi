@@ -67,19 +67,21 @@ sensor:
     pm_2_5_count: { name: "Polverine PM 2.5 Count" }
     runtime: { name: "Polverine BMV080 Runtime" }
 
-  # BME690 over I2C via the stock `bme680` component (raw register read +
-  # in-firmware compensation). The BME690 shares the BME680/688 chip-id (0x61)
-  # and calibration registers, so temperature / pressure / humidity read
-  # ACCURATELY (this is what fixes the old `model: bme688` BSEC offset).
+  # BME690 over I2C via the stock `bme680` component (raw read + in-firmware
+  # compensation, no BSEC — avoids the old `model: bme688` BSEC offset). The
+  # BME690 shares the BME680/688 chip-id (0x61) and calibration registers.
   #
-  # GAS IS OMITTED ON PURPOSE. The BME690 is a "high-gas" variant: Bosch selects
-  # the gas algorithm by the variant register (0xF0), and ESPHome's stock bme680
-  # only implements the BME680 "low-gas" lookup-table path and never reads 0xF0 —
-  # so on a BME690 it reads gas bytes from the wrong offsets with the wrong
-  # formula and returns a MEANINGLESS resistance (ESPHome #11939, PR #4498).
-  # Omitting `heater:` => set_heater(0,0) => plate off, so it also can't
-  # self-heat the die and skew the temperature. BME690 gas/IAQ would need the
-  # unmerged BSEC3 `bme690` component (esp-idf framework + a Bosch blob).
+  # GAS + HEATER ARE OMITTED ON PURPOSE. The BME690 is a "high-gas" variant: Bosch
+  # selects the gas algorithm by the variant register (0xF0), and stock bme680
+  # implements only the BME680 "low-gas" path and never reads 0xF0 — so
+  # gas_resistance is a frozen/meaningless value on a BME690 (ESPHome #11939,
+  # PR #4498). Omitting `heater:` => set_heater(0,0) => plate off; this also avoids
+  # the gas heater self-heating the die, which inflates temperature AND (via
+  # t_fine) pressure.
+  #
+  # NOTE: T/P/H accuracy on the BME690 via stock bme680 is still being verified
+  # on-device with the heater disabled. Full gas/IAQ would need the BSEC3 `bme690`
+  # component (esp-idf framework + a Bosch blob), unmerged as of mid-2026.
   - platform: bme680
     i2c_id: bus_a
     address: 0x76
