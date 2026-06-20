@@ -69,9 +69,17 @@ sensor:
 
   # BME690 over I2C via the stock `bme680` component (raw register read +
   # in-firmware compensation). The BME690 shares the BME680/688 chip-id (0x61)
-  # and calibration registers, so this reads accurate T/P/H/gas. No IAQ index —
-  # that requires the BSEC blob, which has no BME690 config (the source of the
-  # old `model: bme688` inaccuracy).
+  # and calibration registers, so temperature / pressure / humidity read
+  # ACCURATELY (this is what fixes the old `model: bme688` BSEC offset).
+  #
+  # GAS IS OMITTED ON PURPOSE. The BME690 is a "high-gas" variant: Bosch selects
+  # the gas algorithm by the variant register (0xF0), and ESPHome's stock bme680
+  # only implements the BME680 "low-gas" lookup-table path and never reads 0xF0 —
+  # so on a BME690 it reads gas bytes from the wrong offsets with the wrong
+  # formula and returns a MEANINGLESS resistance (ESPHome #11939, PR #4498).
+  # Omitting `heater:` => set_heater(0,0) => plate off, so it also can't
+  # self-heat the die and skew the temperature. BME690 gas/IAQ would need the
+  # unmerged BSEC3 `bme690` component (esp-idf framework + a Bosch blob).
   - platform: bme680
     i2c_id: bus_a
     address: 0x76
@@ -88,13 +96,6 @@ sensor:
       name: "BME690 Humidity"
       filters:
         - delta: 0.2
-    gas_resistance:
-      name: "BME690 Gas Resistance"
-      filters:
-        - delta: 100.0
-    heater:
-      temperature: 320
-      duration: 150ms
 
   - platform: internal_temperature
     name: "ESP32 Internal Temperature"
