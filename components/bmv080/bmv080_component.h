@@ -60,7 +60,9 @@ class BMV080Component : public PollingComponent {
   float get_setup_priority() const override { return setup_priority::LATE; }
 
   // Configuration setters
-  void set_mode(MeasurementMode mode) { this->mode_ = mode; }
+  // NB: set_measurement_mode (not set_mode) — the leaf components multiply-inherit
+  // spi::SPIDevice, whose set_mode(SPIMode) would otherwise collide at name lookup.
+  void set_measurement_mode(MeasurementMode mode) { this->mode_ = mode; }
   void set_measurement_algorithm(MeasurementAlgorithm algo) { this->algorithm_ = algo; }
   void set_integration_time(float time) { this->integration_time_ = time; }
   void set_duty_cycling_period(uint16_t period) { this->duty_cycling_period_ = period; }

@@ -116,7 +116,7 @@ async def setup_bmv080(var, config):
     """
     await cg.register_component(var, config)
 
-    cg.add(var.set_mode(config[CONF_MODE]))
+    cg.add(var.set_measurement_mode(config[CONF_MODE]))
     cg.add(var.set_measurement_algorithm(config[CONF_MEASUREMENT_ALGORITHM]))
     cg.add(var.set_integration_time(config[CONF_INTEGRATION_TIME]))
     cg.add(var.set_duty_cycling_period(config[CONF_DUTY_CYCLING_PERIOD]))
