@@ -71,13 +71,16 @@ sensor:
   # compensation, no BSEC — avoids the old `model: bme688` BSEC offset). The
   # BME690 shares the BME680/688 chip-id (0x61) and calibration registers.
   #
-  # GAS + HEATER ARE OMITTED ON PURPOSE. The BME690 is a "high-gas" variant: Bosch
-  # selects the gas algorithm by the variant register (0xF0), and stock bme680
-  # implements only the BME680 "low-gas" path and never reads 0xF0 — so
-  # gas_resistance is a frozen/meaningless value on a BME690 (ESPHome #11939,
-  # PR #4498). Omitting `heater:` => set_heater(0,0) => plate off; this also avoids
-  # the gas heater self-heating the die, which inflates temperature AND (via
-  # t_fine) pressure.
+  # GAS IS OMITTED + THE HEATER IS EXPLICITLY DISABLED. The BME690 is a "high-gas"
+  # variant: Bosch selects the gas algorithm by the variant register (0xF0), and
+  # stock bme680 implements only the BME680 "low-gas" path and never reads 0xF0 —
+  # so gas_resistance is a frozen/meaningless value on a BME690 (ESPHome #11939,
+  # PR #4498). NOTE: `heater:` must be set to NULL to disable it. OMITTING the key
+  # does NOT disable it — bme680's to_code only calls set_heater() when the key is
+  # present, so an omitted heater falls back to the C++ default (320°C/150ms, ON).
+  # Only `heater:` with a null value hits `if not conf: set_heater(0,0)`. Disabling
+  # the heater also stops it self-heating the die, which inflates temperature AND
+  # (via t_fine) pressure.
   #
   # NOTE: T/P/H accuracy on the BME690 via stock bme680 is still being verified
   # on-device with the heater disabled. Full gas/IAQ would need the BSEC3 `bme690`
@@ -98,6 +101,7 @@ sensor:
       name: "BME690 Humidity"
       filters:
         - delta: 0.2
+    heater:   # null => set_heater(0,0) => heater OFF (omitting would default it ON)
 
   - platform: internal_temperature
     name: "ESP32 Internal Temperature"
