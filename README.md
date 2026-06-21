@@ -125,9 +125,19 @@ ESPHome 2026.6.1.** First flash: compiled clean, `bmv080_open` succeeded over SP
 ID read (`D0ML6909261C`), continuous PM1/PM2.5/PM10 + particle counts + obstructed/out-of-range
 publishing to Home Assistant. SDK driver 24.1.0; SPI2 @ 1 MHz, CS GPIO10.
 
-The unified I²C+SPI layout here is intended for upstreaming — ideally a PR back to
-sweitzja's component so I²C + SPI live in one place, and/or a core ESPHome PR (precedent:
-`bme68x_bsec2` is in ESPHome core depending on a closed Bosch lib).
+This is an **external component** today. It's already in the bus-agnostic hub + leaf shape
+ESPHome core asks for — the one thing blocking a core PR is that the Bosch BMV080 libraries
+are behind a registration form rather than published on Bosch's GitHub (the way BSEC2 is,
+which is why the in-tree `bme68x_bsec2` component can exist). Once Bosch publishes the libs,
+core can fetch them at build and this drops in.
+
+### Tracking
+
+| Item | Where | Why |
+|---|---|---|
+| **Bosch: publish the libs** | [boschsensortec/BMV_BME#1](https://github.com/boschsensortec/BMV_BME/issues/1) | The unblock for ESPHome core — asks Bosch to publish the prebuilt libs per-arch, as they already do for BSEC2. 👍 there if you want this upstream. |
+| **ESPHome feature request** | [esphome/feature-requests#3178](https://github.com/esphome/feature-requests/issues/3178) | Community demand for BMV080 support; where this component is announced. |
+| **Related — BME690 / BSEC3** | [esphome/esphome#13480](https://github.com/esphome/esphome/pull/13480) ([our review](https://github.com/esphome/esphome/pull/13480#issuecomment-4762512842)) | The in-progress core BME690 component (different sensor, same closed-Bosch-lib-in-core question). Our review pins the working BSEC version and flags three fixes. |
 
 ## Credits / license
 
