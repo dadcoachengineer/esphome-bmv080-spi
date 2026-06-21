@@ -137,7 +137,7 @@ core can fetch them at build and this drops in.
 |---|---|---|
 | **Bosch: publish the libs** | [boschsensortec/BMV_BME#1](https://github.com/boschsensortec/BMV_BME/issues/1) | The unblock for ESPHome core — asks Bosch to publish the prebuilt libs per-arch, as they already do for BSEC2. 👍 there if you want this upstream. |
 | **ESPHome feature request** | [esphome/feature-requests#3178](https://github.com/esphome/feature-requests/issues/3178) | Community demand for BMV080 support; where this component is announced. |
-| **Related — BME690 / BSEC3** | [esphome/esphome#13480](https://github.com/esphome/esphome/pull/13480) ([our review](https://github.com/esphome/esphome/pull/13480#issuecomment-4762512842)) | The in-progress core BME690 component (different sensor, same closed-Bosch-lib-in-core question). Our review pins the working BSEC version and flags three fixes. |
+| **Related: BME690 / BSEC3** | [esphome/esphome#13480](https://github.com/esphome/esphome/pull/13480) ([root cause + fix](https://github.com/esphome/esphome/pull/13480#issuecomment-4763491873)) | The in-progress core BME690 component (different sensor, same closed-Bosch-lib-in-core question). We root-caused the BSEC 3.3 raw-only behavior (3.3 disabled `BREATH_VOC_EQUIVALENT` for the BME690, which drops the whole IAQ family) and shipped a version-branch fix on [`bme690-casef-1`](https://github.com/dadcoachengineer/esphome/tree/bme690-casef-1). On an ESP32-S3 it goes from raw-only to the full IAQ family and reaches BSEC accuracy `Calibrated` under 3.3, so the earlier 3.2.1.0 downgrade is no longer needed. |
 
 #### Same gate, across the ecosystem
 
