@@ -144,5 +144,8 @@ core can fetch them at build and this drops in.
 - Component architecture, Bosch SDK wrapping, I²C transport, FreeRTOS task:
   © [@sweitzja](https://github.com/sweitzja/esphome-bmv080) (MIT).
 - SPI transport + bus-agnostic hub refactor: this fork.
+- SPI protocol reference + validation hardware: the [BlackIoT Polverine](https://github.com/BlackIoT/Polverine)
+  and its open reference firmware (`POLVERINE_HOMEASSISTANT_DEMO/src/sensors/bmv080_io.c`) — the SPI
+  transport was matched against it, and every flash was validated on a Polverine. Thanks to the BlackIoT team.
 - `bosch/*.a`, `bosch/*.h`: Bosch Sensortec, under Bosch's SDK license (not MIT).
   See Bosch Sensortec terms before redistributing.
