@@ -139,6 +139,18 @@ core can fetch them at build and this drops in.
 | **ESPHome feature request** | [esphome/feature-requests#3178](https://github.com/esphome/feature-requests/issues/3178) | Community demand for BMV080 support; where this component is announced. |
 | **Related — BME690 / BSEC3** | [esphome/esphome#13480](https://github.com/esphome/esphome/pull/13480) ([our review](https://github.com/esphome/esphome/pull/13480#issuecomment-4762512842)) | The in-progress core BME690 component (different sensor, same closed-Bosch-lib-in-core question). Our review pins the working BSEC version and flags three fixes. |
 
+#### Same gate, across the ecosystem
+
+The BMV080 isn't the only Bosch part stuck behind the download-form library model — the BSEC3 / BME690 libs are too. These are open discussions with the same root cause, and they all point back at the one fix in [BMV_BME#1](https://github.com/boschsensortec/BMV_BME/issues/1):
+
+| Where | What's discussed |
+|---|---|
+| [Bosch forum — Zephyr drivers for BMV080 + BME690](https://community.bosch-sensortec.com/mems-sensors-forum-jrmujtaw/post/zephyr-drivers-for-bmv080-and-bme690-G3c9CiSME9J3py4) | The SDK ships only Arduino / Linux / Windows builds — no Zephyr — because the libs aren't fetchable at build time. |
+| [Bosch forum — BSEC3 3.3.0.0 linking regression](https://community.bosch-sensortec.com/mems-sensors-forum-jrmujtaw/post/bsec3-3-0-0-linking-issue-ISO2FGK1nfUZk9M) | `bsec_get_instance_size()` was present in 3.2.1.0 and silently dropped from the 3.3.0.0 prebuilt lib — the kind of regression versioned GitHub releases would surface. |
+| [Bosch-BSEC2-Library #57](https://github.com/boschsensortec/Bosch-BSEC2-Library/issues/57) | The GitHub-published BSEC stopped at v2.6.1.0; v3.2.1.0 is form-only. Asks Bosch to publish the newer libs the same way. |
+| [Bosch-BSEC2-Library #61](https://github.com/boschsensortec/Bosch-BSEC2-Library/issues/61) | Request for a first-class, fetch-at-build ESP-IDF component — exactly what ESPHome core consumes. |
+| [BlackIoT/Polverine #1](https://github.com/BlackIoT/Polverine/issues/1) | A downstream open-air-quality project ([CanAirIO](https://github.com/kike-canaries/canairio_firmware)) blocked by the closed BMV080 lib. |
+
 ## Credits / license
 
 - Component architecture, Bosch SDK wrapping, I²C transport, FreeRTOS task:
