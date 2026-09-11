@@ -16,7 +16,7 @@ implements the two transport methods (the bus framing) and registers itself on
 its bus. Sensors reference the leaf instance via `bmv080_id`.
 
 The BMV080 ships only as Bosch precompiled static libraries (lib_bmv080.a +
-lib_postProcessor.a), bundled per-architecture in the bosch/ subdirectory
+lib_postProcessor.a), bundled per-architecture in the bmv080_sdk/ subdirectory
 (Xtensa for ESP32/S2/S3, RISC-V for C3/C6); the linker selects the matching .a
 and skips the rest. setup_bmv080() adds the -I/-L/-l build flags.
 """
@@ -83,8 +83,8 @@ def _add_bosch_sdk():
     """Register the bundled Bosch precompiled SDK as an ESP-IDF component.
 
     Headers (bmv080.h, bmv080_defs.h) + the per-arch static libs (lib_bmv080.a,
-    lib_postProcessor.a) live in this package's bosch/ subdirectory, which
-    carries its own CMakeLists.txt.
+    lib_postProcessor.a) live in this package's bmv080_sdk/ subdirectory,
+    which carries its own CMakeLists.txt.
 
     DO NOT go back to cg.add_build_flag("-I.../-L.../-l...") here. ESPHome
     2026.x builds ESP-IDF natively with CMake and emits no platformio.ini;
@@ -102,14 +102,19 @@ def _add_bosch_sdk():
     The same applies to the `esphome: build_flags:` YAML option: it funnels
     into the identical CORE.add_build_flag() sink and is equally inert here.
     """
-    bosch_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bosch")
-    if not os.path.isfile(os.path.join(bosch_dir, "bmv080_defs.h")):
+    sdk_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bmv080_sdk")
+    if not os.path.isfile(os.path.join(sdk_dir, "bmv080_defs.h")):
         raise cv.Invalid(
-            f"BMV080: bundled Bosch SDK headers not found in {bosch_dir}. "
+            f"BMV080: bundled Bosch SDK headers not found in {sdk_dir}. "
             "The external component copy looks incomplete."
         )
-    esp32.add_idf_component(name="bmv080_sdk", path=bosch_dir)
-    _LOGGER.info("BMV080: registered Bosch SDK as IDF component from %s", bosch_dir)
+    # The IDF component manager derives the component name from the LAST
+    # PATH SEGMENT, so the directory name and `name=` must agree -- with a
+    # mismatch the build fails at "Failed to resolve component ... unknown
+    # name". The directory is `bmv080_sdk` rather than `bosch` because IDF
+    # component names are global and this config also builds BSEC.
+    esp32.add_idf_component(name="bmv080_sdk", path=sdk_dir)
+    _LOGGER.info("BMV080: registered Bosch SDK as IDF component from %s", sdk_dir)
 
 
 async def setup_bmv080(var, config):
